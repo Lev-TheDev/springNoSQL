@@ -2,6 +2,7 @@ package com.devsuperior.workshopmongo.services;
 
 import com.devsuperior.workshopmongo.domain.Post;
 import com.devsuperior.workshopmongo.domain.User;
+import com.devsuperior.workshopmongo.dto.AuthorDTO;
 import com.devsuperior.workshopmongo.repository.PostRepository;
 import com.devsuperior.workshopmongo.repository.UserRepository;
 import net.datafaker.Faker;
@@ -83,8 +84,8 @@ public class DataSeeder implements CommandLineRunner {
             sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
             List<User> users = new ArrayList<>(rep.findAll());
 
-            Post post1 = new Post(null, sdf.parse("21/03/2018"), "Partiu viagem", "Vou viajar para São Paulo. Abraços!", users.getFirst());
-            Post post2 = new Post(null, sdf.parse("21/03/2018"), "Bom dia", "Acordei feliz hoje!", users.getFirst());
+            Post post1 = new Post(null, sdf.parse("21/03/2018"), "Partiu viagem", "Vou viajar para São Paulo. Abraços!", new AuthorDTO(users.getFirst()));
+            Post post2 = new Post(null, sdf.parse("21/03/2018"), "Bom dia", "Acordei feliz hoje!", new AuthorDTO(users.getFirst()));
             List<Post> posts = new ArrayList<>(List.of(post1, post2));
 
             repo.saveAll(posts);
