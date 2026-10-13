@@ -19,14 +19,14 @@ import java.util.Scanner;
 @Component
 public class DataSeeder implements CommandLineRunner {
     @Autowired
-    private final UserRepository rep;
+    private final UserRepository userRepository;
 
     @Autowired
-    private final PostRepository repo;
+    private final PostRepository postRepository;
 
-    public DataSeeder(UserRepository rep, PostRepository repo) {
-        this.rep = rep;
-        this.repo = repo;
+    public DataSeeder(UserRepository userRepository, PostRepository postRepository) {
+        this.userRepository = userRepository;
+        this.postRepository = postRepository;
     }
 
     @Override
@@ -37,11 +37,11 @@ public class DataSeeder implements CommandLineRunner {
         boolean shouldGeneratePosts = true;
 
         // Validação para apagar usuários
-        if (rep.count() > 0) {
+        if (userRepository.count() > 0) {
             System.out.println("-> Banco de dados já possui registros de usuários. Deseja limpar o banco de dados? (s/n)");
             String answer = sc.next();
             if (answer.equalsIgnoreCase("s")) {
-                rep.deleteAll();
+                userRepository.deleteAll();
                 System.out.println("-> Banco de dados de usuários limpo com sucesso!");
             } else {
                 System.out.println("-> Operação de limpeza de usuários cancelada. O estado salvo do banco de dados foi mantido!");
@@ -50,11 +50,11 @@ public class DataSeeder implements CommandLineRunner {
         }
 
         // Validação para apagar posts
-        if (repo.count() > 0) {
+        if (postRepository.count() > 0) {
             System.out.println("-> Banco de dados já possui registros de posts. Deseja limpar os posts? (s/n)");
             String answer = sc.next();
             if (answer.equalsIgnoreCase("s")) {
-                repo.deleteAll();
+                postRepository.deleteAll();
                 System.out.println("-> Banco de dados de posts limpo com sucesso!");
             } else {
                 System.out.println("-> Operação de limpeza de posts cancelada. O estado salvo do banco de dados foi mantido!");
@@ -75,20 +75,23 @@ public class DataSeeder implements CommandLineRunner {
 
                 users.add(new User(name, email));
             }
-            rep.saveAll(users);
+            userRepository.saveAll(users);
             System.out.println(nUsers + " usuários inseridos com sucesso! Verifique no MongoDB Compass.");
         }
 
         if (shouldGeneratePosts) {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-            List<User> users = new ArrayList<>(rep.findAll());
+            List<User> users = new ArrayList<>(userRepository.findAll());
 
             Post post1 = new Post(null, sdf.parse("21/03/2018"), "Partiu viagem", "Vou viajar para São Paulo. Abraços!", new AuthorDTO(users.getFirst()));
             Post post2 = new Post(null, sdf.parse("21/03/2018"), "Bom dia", "Acordei feliz hoje!", new AuthorDTO(users.getFirst()));
             List<Post> posts = new ArrayList<>(List.of(post1, post2));
 
-            repo.saveAll(posts);
+            postRepository.saveAll(posts);
+            users.getFirst().getPosts().addAll(posts);
+            userRepository.save(users.getFirst());
+
             System.out.println("Posts inseridos com sucesso! Verifique no MongoDB Compass.");
         }
     }
