@@ -3,6 +3,7 @@ package com.devsuperior.workshopmongo.services;
 import com.devsuperior.workshopmongo.domain.Post;
 import com.devsuperior.workshopmongo.domain.User;
 import com.devsuperior.workshopmongo.dto.AuthorDTO;
+import com.devsuperior.workshopmongo.dto.CommentDTO;
 import com.devsuperior.workshopmongo.repository.PostRepository;
 import com.devsuperior.workshopmongo.repository.UserRepository;
 import net.datafaker.Faker;
@@ -87,6 +88,13 @@ public class DataSeeder implements CommandLineRunner {
             Post post1 = new Post(null, sdf.parse("21/03/2018"), "Partiu viagem", "Vou viajar para São Paulo. Abraços!", new AuthorDTO(users.getFirst()));
             Post post2 = new Post(null, sdf.parse("21/03/2018"), "Bom dia", "Acordei feliz hoje!", new AuthorDTO(users.getFirst()));
             List<Post> posts = new ArrayList<>(List.of(post1, post2));
+
+            CommentDTO c1 = new CommentDTO("Boa viagem mano!", sdf.parse("21/03/2018"), new AuthorDTO(users.get(1)));
+            CommentDTO c2 = new CommentDTO("Aproveite!", sdf.parse("22/03/2018"), new AuthorDTO(users.get(2)));
+            CommentDTO c3 = new CommentDTO("Tenha um ótimo dia!", sdf.parse("23/03/2018"), new AuthorDTO(users.get(1)));
+
+            post1.getComments().addAll(List.of(c1, c2));
+            post2.getComments().add(c3);
 
             postRepository.saveAll(posts);
             users.getFirst().getPosts().addAll(posts);
